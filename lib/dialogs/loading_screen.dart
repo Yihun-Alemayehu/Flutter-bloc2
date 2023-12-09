@@ -11,7 +11,21 @@ class LoadingScreen {
 
   LoadingScreenController? _controller;
 
-  LoadingScreenController showOverlay({
+  void show({
+    required BuildContext context,
+    required String text,
+  }) {
+    if (_controller?.update(text) ?? false) {
+      return;
+    } else {
+      _controller = _showOverlay(
+        context: context,
+        text: text,
+      );
+    }
+  }
+
+  LoadingScreenController _showOverlay({
     required BuildContext context,
     required String text,
   }) {
@@ -55,11 +69,12 @@ class LoadingScreen {
                       StreamBuilder<String>(
                         stream: _text.stream,
                         builder: (context, snapshot) {
-                          if(snapshot.hasData) {
-                            return Text(snapshot.data!,
-                            textAlign: TextAlign.center,
+                          if (snapshot.hasData) {
+                            return Text(
+                              snapshot.data!,
+                              textAlign: TextAlign.center,
                             );
-                          }else {
+                          } else {
                             return Container();
                           }
                         },
@@ -74,5 +89,17 @@ class LoadingScreen {
       },
     );
     state?.insert(overlay);
+
+    return LoadingScreenController(
+      close: () {
+        _text.close();
+        overlay.remove();
+        return true;
+      },
+      update: (text) {
+        _text.add(text);
+        return true;
+      },
+    );
   }
 }
