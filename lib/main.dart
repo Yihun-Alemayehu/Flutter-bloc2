@@ -1,9 +1,15 @@
+import 'package:bloc_notes/api/login_api.dart';
+import 'package:bloc_notes/api/notes_api.dart';
+import 'package:bloc_notes/bloc/app_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
-  runApp(const MaterialApp(
-    home: HomePage(),
-  ));
+  runApp(
+    const MaterialApp(
+      home: HomePage(),
+    ),
+  );
 }
 
 class HomePage extends StatelessWidget {
@@ -11,12 +17,18 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home Page'),
-        centerTitle: true,
+    return BlocProvider<AppBloc>(
+      create: (context) => AppBloc(
+        loginApi: LoginApi.instance(),
+        notesApi: NotesApi(),
       ),
-      body: Container(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Home Page'),
+          centerTitle: true,
+        ),
+        body: Container(),
+      ),
     );
   }
 }
