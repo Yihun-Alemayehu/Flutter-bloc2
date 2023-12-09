@@ -38,8 +38,45 @@ class AppBloc extends Bloc<AppAction, AppState> {
             fetchedNotes: null,
           ),
         );
+      },
+    );
+    on<LoadNotesAction>(
+      (event, emit) => () async {
+        emit(
+          AppState(
+            isLoading: true,
+            loginError: null,
+            loginHandle: state.loginHandle,
+            fetchedNotes: null,
+          ),
+        );
 
-        
+        // get the loginHandle
+        final loginHandle = state.loginHandle;
+        if (loginHandle != const LogInHandle.yize()) {
+          //Invalid login, can't fetch notes
+          emit(
+            AppState(
+              isLoading: false,
+              loginError: LogInErrors.invalidHandle,
+              loginHandle: loginHandle,
+              fetchedNotes: null,
+            ),
+          );
+          return;
+        }
+        // valid login handle
+        final notes = await notesApi.getNotes(
+          loginHandle: loginHandle!,
+        );
+        emit(
+            AppState(
+              isLoading: false,
+              loginError: null,
+              loginHandle: loginHandle,
+              fetchedNotes: notes,
+            ),
+          );
       },
     );
   }
